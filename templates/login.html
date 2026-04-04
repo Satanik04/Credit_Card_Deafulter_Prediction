@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<title>Login Page</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+<body id="login-form">
+    
+    <div class="login-box">
+        <h2>Login Page</h2>
+
+        {%with messages =get_flashed_messages(with_categories=true) %}
+            {%if messages %}
+                {% for category, message in messages %}
+                    <p style="color:rgb(8, 6, 119)">{{message }}</p>
+                {%endfor %}
+            {%endif %}
+        {%endwith %}
+
+        <form method="POST" id="login-input">
+            
+            {{ form.hidden_tag() }}
+
+            <!-- Username -->
+            <!-- {{ form.username.label }} -->
+            {{ form.username(placeholder="Enter Username") }}<br>
+
+            <!-- Password -->
+            <!-- {{ form.password.label }} -->
+            {{ form.password(placeholder="Enter Password") }}<br>
+
+            <!-- Submit -->
+            {{ form.submit() }}
+
+            <p>New user? 
+            <a href="{{ url_for('register') }}">Register</a>
+            </p>
+        </form>
+
+        
+    </div>
+
+</body>
+</html>

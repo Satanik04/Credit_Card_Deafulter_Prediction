@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+    <link rel="stylesheet" href="{{url_for('static',filename='styles.css')}}">
+    
+    </head>
+<body>
+
+<form action="/predict" method="post">
+    <div class="main-section">
+        {%with messages =get_flashed_messages(with_categories=true) %}
+            {%if messages %}
+                {% for category, message in messages %}
+                    <p style="color:rgb(234, 236, 232);font-size: 20px; font-weight: bold;">{{message }}</p>
+                {%endfor %}
+            {%endif %}
+        {%endwith %}
+        <h1>CREDIT CARD DEFAULTER PREDICTION</h1>
+        <input type="number" name="LIMIT_BAL" placeholder="Enter Limit Balance">
+        <!-- <input type="number" name="SEX" placeholder="Enter Gender"> -->
+        <select name="SEX" id="gender">
+            <option value="invalid input">Select Gender</option>
+            <option value="1">Male</option>
+            <option value="0">Female</option>
+        </select>
+
+        <label >Default pay for last 6 months:</label>
+        <input type="number" name="PAY_0" placeholder="Enter pay0">
+        <input type="number" name="PAY_2" placeholder="Enter pay2">
+        <input type="number" name="PAY_3" placeholder="Enter pay3">
+        <input type="number" name="PAY_4" placeholder="Enter pay4">
+        <input type="number" name="PAY_5" placeholder="Enter pay5">
+        <input type="number" name="PAY_6" placeholder="Enter pay6">
+
+        <label >Enter bill amount for last 6 months:</label>
+        <input type="number" name="BILL_AMT1" placeholder="Enter bill amount1">
+        <input type="number" name="BILL_AMT2" placeholder="Enter bill amount2">
+        <input type="number" name="BILL_AMT3" placeholder="Enter bill amount3">
+        <input type="number" name="BILL_AMT4" placeholder="Enter bill amount4">
+        <input type="number" name="BILL_AMT5" placeholder="Enter bill amount5">
+        <input type="number" name="BILL_AMT6" placeholder="Enter bill amount6">
+
+        <label >Pay amount for last 6 months:</label>
+        <input type="number" name="PAY_AMT1" placeholder="Enter pay amount1">
+        <input type="number" name="PAY_AMT2" placeholder="Enter pay amount2">
+        <input type="number" name="PAY_AMT3" placeholder="Enter pay amount3">
+        <input type="number" name="PAY_AMT4" placeholder="Enter pay amount4">
+        <input type="number" name="PAY_AMT5" placeholder="Enter pay amount5">
+        <input type="number" name="PAY_AMT6" placeholder="Enter pay amount6">
+    </div>
+
+    <div class="radio-row">
+        <label>Education:</label>
+        <input type="radio" name="education" value="EDUCATION_Graduate school"> Graduate
+        <input type="radio" name="education" value="EDUCATION_High School"> High School
+        <input type="radio" name="education" value="EDUCATION_Others"> Others
+        <input type="radio" name="education" value="EDUCATION_University"> University <br>
+    </div>
+
+    <!-- <input type="number" name="EDUCATION_Graduate school" placeholder="graduate">
+    <input type="number" name="EDUCATION_High School" placeholder="high school">
+    <input type="number" name="EDUCATION_Others" placeholder="others">
+    <input type="number" name="EDUCATION_University" placeholder="university"> -->
+
+    <div class="radio-message">
+        <label >Marriage:</label>
+        <input type="radio" name="marriage" value="Married">Married
+        <input type="radio" name="marriage" value="Single">Single
+    </div>
+    
+
+    <button type="submit">Predict</button>
+    
+</form>
+
+
+{% if result %}
+<p>Result: {{ result }}</p>
+{% endif %}
+
+
+</body>
+</html>

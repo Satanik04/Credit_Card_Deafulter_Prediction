@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
+<body id="login-body">
+
+<div class="register-box">
+    <h2>Register Here</h2>
+
+    <form method="POST" class="reg-inside--box">
+        
+        {{ form.hidden_tag() }}
+
+        <!-- Username -->
+        <!-- {{ form.username.label }} -->
+        {{ form.username(placeholder="Enter Username") }}
+
+        <!-- Password -->
+        <!-- {{ form.password.label }} -->
+        {{ form.password(placeholder="Enter Password") }}
+
+        <!-- Submit -->
+        {{ form.submit() }}
+
+    </form>
+    <p>Already have account?
+        <a href="{{ url_for('login') }}">Login</a>
+    </p>
+</div>
+
+</body>
+</html>
