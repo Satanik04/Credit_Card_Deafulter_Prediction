@@ -10,8 +10,14 @@
     <div id="container">
         <h2>Predicted Result: </h2>
         <p>{{result}}</p>
+        {%if prob >60 %}
+            <p style="color: red;">Risk: {{prob}}%</p>
+        {% else %}
+            <p style="color: green;">Risk:{{prob}}%</p>
+        {% endif %}
         <a href="/">Go back to main page</a>
         <a href="/logout" id="index-logout">Logout</a>
+        <a href="/download">Download Report</a>
     <div/>
     
 </body>

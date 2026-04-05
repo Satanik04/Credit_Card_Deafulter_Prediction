@@ -4,6 +4,9 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired
 from werkzeug.urls import url_encode
+from reportlab.platypus import SimpleDocTemplate,Paragraph
+from reportlab.lib.styles import getSampleStyleSheet
+from flask import send_file
 import pickle
 
 
@@ -69,6 +72,44 @@ def logout():
     session.pop('user', None)
     return redirect(url_for('login'))
 
+feature_names = [
+    "LIMIT_BAL", "SEX", "PAY_0", "PAY_2", "PAY_3", "PAY_4",
+    "PAY_5", "PAY_6", "BILL_AMT1", "BILL_AMT2", "BILL_AMT3",
+    "BILL_AMT4", "BILL_AMT5", "BILL_AMT6", "PAY_AMT1",
+    "PAY_AMT2", "PAY_AMT3", "PAY_AMT4", "PAY_AMT5",
+    "PAY_AMT6", "EDU_GRAD", "EDU_HIGH", "EDU_OTHER",
+    "EDU_UNI", "MARRIED", "SINGLE"
+]
+
+#download pdf
+def create_pdf(data,result,probability):
+    file_path=f"report_{session['user']}.pdf"
+
+    doc=SimpleDocTemplate(file_path)
+    styles=getSampleStyleSheet()
+
+    content=[]
+    content.append(Paragraph("credit card Report",styles['Title']))
+    content.append(Paragraph(f"Result:{result}",styles['Normal']))
+    content.append(Paragraph(f"Risk:{probability}%",styles['Normal']))
+    content.append(Paragraph("User Input:",styles['Heading2']))
+
+    for name,value in zip(feature_names, data):
+        content.append(Paragraph(f"{name}:{value}",styles['Normal']))
+    doc.build(content)
+    return file_path
+
+@app.route("/download")
+def download():
+    if 'user' not in session:
+        return redirect(url_for("login"))
+    data=session.get('data')
+    result=session.get('result')
+    probability=session.get('prob')
+
+    file_path=create_pdf(data,result,probability)
+    return send_file(file_path,as_attachment=True)
+
 
 
 #predict result
@@ -114,10 +155,17 @@ def predict():
     ]
 
     prediction = model.predict([data])
+    prob=model.predict_proba([data])
+    probability=prob[0][1]*100
+    probability=round(probability,2)
 
     result = "Oops! you may default on credit card payment" if prediction[0] == 1 else "No Default Risk Detected"
 
-    return render_template('result.html', result=result)
+    session['data']=data
+    session['result']=result
+    session['prob']=probability
+
+    return render_template('result.html', result=result,prob=probability)
 
 
 if __name__ == "__main__":

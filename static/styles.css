@@ -193,7 +193,7 @@ button:hover{
 }
 
 .login-box {
-    background: #ceab35;
+    background: #d3ad31;
     padding: 32px;
     border-radius: 10px;
     width: 300px;
@@ -240,7 +240,7 @@ button:hover{
 .login-box button {
     margin-top: 18px;
     padding: 10px 20px;
-    background-color: #d89829;
+    background-color: #241906;
     color: rgb(17, 14, 14);
     border: none;
     border-radius: 5px;
