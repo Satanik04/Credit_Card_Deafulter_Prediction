@@ -53,6 +53,13 @@ form h1{
     border-radius: 8px;
     border: none;
 }
+#pay{
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border-radius: 8px;
+    border: none;
+    height: 36px;
+}
 select option{
     background-color: rgba(255,255,255,0.2);
     color: black;
