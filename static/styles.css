@@ -99,9 +99,17 @@ form label{
     grid-column: span 3;
 }
 .radio-message{
-    margin-top: 18px;
+    margin-top: 17px;
     display: flex;
     gap: 13px;
+}
+.radio-gender{
+    margin-top: 17px;
+    display: flex;
+    gap: 13px;
+}
+input[type="radio"] {
+    transform: scale(1.26);
 }
 
 /* Button */

@@ -8,6 +8,10 @@ from reportlab.platypus import SimpleDocTemplate,Paragraph
 from reportlab.lib.styles import getSampleStyleSheet
 from flask import send_file
 import pickle
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib import colors
+from datetime import datetime
 
 
 app = Flask(__name__)
@@ -67,18 +71,18 @@ def register():
     return render_template("register.html", form=form)
 
 #logout
-@app.route("/logout")
-def logout():
-    session.pop('user', None)
-    return redirect(url_for('login'))
+# @app.route("/logout")
+# def logout():
+#     session.pop('user', None)
+#     return redirect(url_for('login'))
 
 feature_names = [
-    "LIMIT_BAL", "SEX", "PAY_0", "PAY_2", "PAY_3", "PAY_4",
-    "PAY_5", "PAY_6", "BILL_AMT1", "BILL_AMT2", "BILL_AMT3",
+    "LIMIT_BAL", "BILL_AMT1", "BILL_AMT2", "BILL_AMT3",
     "BILL_AMT4", "BILL_AMT5", "BILL_AMT6", "PAY_AMT1",
     "PAY_AMT2", "PAY_AMT3", "PAY_AMT4", "PAY_AMT5",
-    "PAY_AMT6", "EDU_GRAD", "EDU_HIGH", "EDU_OTHER",
-    "EDU_UNI", "MARRIED", "SINGLE"
+    "PAY_AMT6","PAY_0", "PAY_2", "PAY_3", "PAY_4",
+    "PAY_5", "PAY_6", "EDU_GRAD", "EDU_HIGH", "EDU_OTHER",
+    "EDU_UNI", "SEX", "MARRIED", "SINGLE"
 ]
 
 #download pdf
@@ -89,13 +93,100 @@ def create_pdf(data,result,probability):
     styles=getSampleStyleSheet()
 
     content=[]
-    content.append(Paragraph("credit card Report",styles['Title']))
+    content.append(Paragraph("Credit Card Report",styles['Title']))
+    content.append(Spacer(1, 15))
     content.append(Paragraph(f"Result:{result}",styles['Normal']))
     content.append(Paragraph(f"Risk:{probability}%",styles['Normal']))
-    content.append(Paragraph("User Input:",styles['Heading2']))
+    content.append(Spacer(1,15))
+    content.append(Paragraph("Input Data:",styles['Heading2']))
 
-    for name,value in zip(feature_names, data):
-        content.append(Paragraph(f"{name}:{value}",styles['Normal']))
+    #for name,value in zip(feature_names, data):
+    #     if name=="SEX":
+    #         value = "Male" if value == 1 else "Female"
+    #     if name.startswith("EDU_"):
+    #         if value==1:
+    #             if name == "EDU_GRAD":
+    #                 value = "Graduate School"
+    #             elif name == "EDU_HIGH":
+    #                 value = "High School"
+    #             elif name == "EDU_OTHER":
+    #                 value = "Others"
+    #             elif name == "EDU_UNI":
+    #                 value = "University"
+    #     if name=="MARRIED" and value==1:
+    #         value="Married"
+    #     if name=="SINGLE" and value==1:
+    #         value=="Single"
+    #     content.append(Paragraph(f"{name}: {value}", styles['Normal']))
+    # doc.build(content)
+    # return file_path
+
+    table_data = [["Feature", "Value"]]
+
+    for name, value in zip(feature_names, data):
+
+        # Gender
+        if name == "SEX":
+            table_data.append(["Gender", "Male" if value == 1 else "Female"])
+            continue
+        
+        if name in ["PAY_0","PAY_2","PAY_3","PAY_4","PAY_5","PAY_6"]:
+            if value == -2:
+                value = "No Bill"
+            elif value == -1:
+                value = "On Time"
+            elif value == 0:
+                value = "Minimum Payment"
+            elif value == 1:
+                value = "Delay 1 Month"
+            elif value == 2:
+                value = "Delay 2 Months"
+            else:
+                value = f"Delay {value} Months"
+        # Education (only selected one)
+        if name.startswith("EDU_"):
+            if value == 1:
+                if name == "EDU_GRAD":
+                    table_data.append(["Education", "Graduate School"])
+                elif name == "EDU_HIGH":
+                    table_data.append(["Education", "High School"])
+                elif name == "EDU_OTHER":
+                    table_data.append(["Education", "Others"])
+                elif name == "EDU_UNI":
+                    table_data.append(["Education", "University"])
+            continue
+
+        # Marriage
+        if name == "MARRIED" and value == 1:
+            table_data.append(["Marital Status", "Married"])
+            continue
+
+        if name == "SINGLE" and value == 1:
+            table_data.append(["Marital Status", "Single"])
+            continue
+
+        if name in ["MARRIED", "SINGLE"]:
+            continue
+
+        # Normal values
+        table_data.append([name, str(value)])
+
+    # Create table
+    table = Table(table_data)
+
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.beige)
+    ]))
+
+    content.append(table)
+    content.append(Spacer(1, 20))
+
+    # Date
+    content.append(Paragraph(f"Date: {datetime.now().strftime('%Y-%m-%d')}", styles['Normal']))
+
     doc.build(content)
     return file_path
 
@@ -131,13 +222,7 @@ def predict():
 
     data = [
         int(request.form['LIMIT_BAL']),
-        int(request.form['SEX']),
-        int(request.form['PAY_0']),
-        int(request.form['PAY_2']),
-        int(request.form['PAY_3']),
-        int(request.form['PAY_4']),
-        int(request.form['PAY_5']),
-        int(request.form['PAY_6']),
+        
         int(request.form['BILL_AMT1']),
         int(request.form['BILL_AMT2']),
         int(request.form['BILL_AMT3']),
@@ -150,7 +235,15 @@ def predict():
         int(request.form['PAY_AMT4']),
         int(request.form['PAY_AMT5']),
         int(request.form['PAY_AMT6']),
+
+        int(request.form['PAY_0']),
+        int(request.form['PAY_2']),
+        int(request.form['PAY_3']),
+        int(request.form['PAY_4']),
+        int(request.form['PAY_5']),
+        int(request.form['PAY_6']),
         edu_grad, edu_high, edu_other, edu_uni,
+        int(request.form['SEX']),
         married, single
     ]
 
@@ -159,7 +252,13 @@ def predict():
     probability=prob[0][1]*100
     probability=round(probability,2)
 
-    result = "Oops! you may default on credit card payment" if prediction[0] == 1 else "No Default Risk Detected"
+    # result = "Oops! you may default on credit card payment" if prediction[0] == 1 else "No Default Risk Detected"
+    if probability <20:
+        result= "low Risk Detected"
+    elif probability <60:
+        result="Moderate Risk Detected"
+    else:
+        result="High Risk Detected"
 
     session['data']=data
     session['result']=result
