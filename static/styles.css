@@ -7,7 +7,7 @@
 
 /* Background */
 body{
-    height: 100vh;
+    height: 112vh;
     background: linear-gradient(135deg, #667eea, #764ba2);
     display: flex;
     justify-content: center;
@@ -23,13 +23,12 @@ form{
     width: 80%;
     max-width: 900px;
     padding: 25px;
-
     background: rgba(255,255,255,0.15);
     backdrop-filter: blur(10px);
     border-radius: 15px;
-
     box-shadow: 0 8px 32px rgba(0,0,0,0.2);
     color: white;
+    margin-top: 20px;
 }
 form h1{
     grid-column: span 3;
@@ -369,6 +368,10 @@ button:hover{
 /* logout button */
 .index-logout{
  padding: 5px;
+}
+.logout-header{
+    top: 20px;
+    right: 20px;
 }
 
 

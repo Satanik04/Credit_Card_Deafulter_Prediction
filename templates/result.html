@@ -7,6 +7,9 @@
     <title>Result</title>
 </head>
 <body id="result">
+    <!-- <div class="logout-header">
+         
+    </div> -->
     <div id="container">
         <h2>Predicted Result: </h2>
         <p>{{result}}</p>
@@ -18,7 +21,7 @@
             <p style="color: red;">High Risk:{{prob}}%</p>
         {% endif %}
         <a href="/">Predict Again</a>
-        <!-- <a href="/logout" id="index-logout">Logout</a> -->
+        <a href="/logout" id="index-logout">Logout</a>
         <a href="/download">Download Report</a>
     <div/>
     

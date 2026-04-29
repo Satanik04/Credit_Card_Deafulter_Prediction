@@ -47,7 +47,7 @@ def login():
         # normal password
         if username in users and users[username] == password:
             session['user'] = username
-            flash(f"Welcome {username}")
+            flash(f"WELCOME {username}".upper())
             return redirect(url_for("home"))
         else:
             return "Invalid credentials"
@@ -71,10 +71,10 @@ def register():
     return render_template("register.html", form=form)
 
 #logout
-# @app.route("/logout")
-# def logout():
-#     session.pop('user', None)
-#     return redirect(url_for('login'))
+@app.route("/logout")
+def logout():
+    session.pop('user', None)
+    return redirect(url_for('login'))
 
 feature_names = [
     "LIMIT_BAL", "BILL_AMT1", "BILL_AMT2", "BILL_AMT3",
@@ -202,7 +202,6 @@ def download():
     return send_file(file_path,as_attachment=True)
 
 
-
 #predict result
 @app.route("/predict", methods=["POST"])
 def predict():
@@ -247,14 +246,14 @@ def predict():
         married, single
     ]
 
-    prediction = model.predict([data])
+    #prediction = model.predict([data])
     prob=model.predict_proba([data])
     probability=prob[0][1]*100
     probability=round(probability,2)
 
     # result = "Oops! you may default on credit card payment" if prediction[0] == 1 else "No Default Risk Detected"
     if probability <20:
-        result= "low Risk Detected"
+        result= "Low Risk Detected"
     elif probability <60:
         result="Moderate Risk Detected"
     else:
